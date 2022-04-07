@@ -10,6 +10,16 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE");
+  next();
+});
+
 app.use("/api/places", placesRoutes);
 
 app.use("/api/users", usersRoutes);
@@ -29,7 +39,9 @@ app.use((error, req, res, next) => {
 //if a midware function has four parameters, it will be recognized as the default error handling middleware
 
 mongoose
-  .connect('mongodb+srv://waston:1123581321@cluster0.rygtb.mongodb.net/places?retryWrites=true&w=majority')
+  .connect(
+    "mongodb+srv://waston:1123581321@cluster0.rygtb.mongodb.net/mern?retryWrites=true&w=majority"
+  )
   .then(() => {
     app.listen(5000);
   })
