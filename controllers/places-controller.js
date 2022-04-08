@@ -52,6 +52,8 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
+  
+
   if (!errors.isEmpty()) {
     next(new HttpError("Invalid inputs passed, please check your data.", 422));
   }
@@ -97,8 +99,10 @@ const createPlace = async (req, res, next) => {
     user.places.push(createdPlace);
 
     await user.save({ session: sess });
+    console.log("---");
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Creating place failed, please try again.",
       500
@@ -153,7 +157,6 @@ const deletePlace = async (req, res, next) => {
   let place;
   try {
     place = await Place.findById(placeId).populate("creator");
-    
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place",
