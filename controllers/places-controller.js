@@ -52,7 +52,6 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
-  
 
   if (!errors.isEmpty()) {
     next(new HttpError("Invalid inputs passed, please check your data.", 422));
@@ -98,7 +97,7 @@ const createPlace = async (req, res, next) => {
     await createdPlace.save({ session: sess });
     user.places.push(createdPlace);
 
-    await user.save({ session: sess });
+    await user.save({ session: sess, validateModifiedOnly:true});
     console.log("---");
     await sess.commitTransaction();
   } catch (err) {
