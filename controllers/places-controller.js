@@ -97,7 +97,7 @@ const createPlace = async (req, res, next) => {
     await createdPlace.save({ session: sess });
     user.places.push(createdPlace);
 
-    await user.save({ session: sess, validateModifiedOnly:true});
+    await user.save({ session: sess, validateModifiedOnly: true });
     console.log("---");
     await sess.commitTransaction();
   } catch (err) {
@@ -174,9 +174,10 @@ const deletePlace = async (req, res, next) => {
     sess.startTransaction();
     await place.deleteOne({ session: sess });
     place.creator.places.pull(place);
-    await place.creator.save({ session: sess });
+    await place.creator.save({ session: sess, validateModifiedOnly: true });
     await sess.commitTransaction();
   } catch (err) {
+   
     const error = new HttpError(
       "Something went wrong, could not delete the place.",
       500
