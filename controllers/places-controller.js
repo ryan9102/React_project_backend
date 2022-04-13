@@ -41,7 +41,7 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(error);
   }
 
-  if (!places || places.length === 0) {
+  if (!places) {
     next(new HttpError("Could not find places for the provided user id.", 404));
   } else {
     res.json({
@@ -98,7 +98,7 @@ const createPlace = async (req, res, next) => {
     user.places.push(createdPlace);
 
     await user.save({ session: sess, validateModifiedOnly: true });
-    console.log("---");
+    
     await sess.commitTransaction();
   } catch (err) {
     console.log(err);
