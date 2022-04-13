@@ -1,4 +1,5 @@
 const HttpError = require("../models/http-error");
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../utils/location");
 const Place = require("../models/place");
@@ -70,8 +71,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/13-08-08-hongkong-by-RalfR-086.jpg/2560px-13-08-08-hongkong-by-RalfR-086.jpg",
+    image: req.file.path,
     creator,
   });
 
@@ -98,7 +98,7 @@ const createPlace = async (req, res, next) => {
     user.places.push(createdPlace);
 
     await user.save({ session: sess, validateModifiedOnly: true });
-    
+
     await sess.commitTransaction();
   } catch (err) {
     console.log(err);
@@ -169,6 +169,8 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -177,13 +179,16 @@ const deletePlace = async (req, res, next) => {
     await place.creator.save({ session: sess, validateModifiedOnly: true });
     await sess.commitTransaction();
   } catch (err) {
-   
     const error = new HttpError(
       "Something went wrong, could not delete the place.",
       500
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted place." });
 };
